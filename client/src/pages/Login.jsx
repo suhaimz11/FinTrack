@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { login } from '../services/api';
 import { useNavigate } from 'react-router-dom'; // ✅ Import useNavigate
 
 export default function Login() {
@@ -6,16 +7,16 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate(); // ✅ Initialize navigate
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Mock login logic (replace with real auth later)
-    if (email && password) {
-      console.log('Login with:', { email, password });
-      alert('Login submitted!');
-      navigate('/dashboard'); // ✅ Redirect to dashboard
-    } else {
-      alert('Please enter valid credentials.');
+    try {
+      const res = await login({ email, password });
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data));
+      alert('Login successful!');
+      navigate('/dashboard');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Login failed');
     }
   };
 
