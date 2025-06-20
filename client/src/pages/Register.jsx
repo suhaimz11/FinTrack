@@ -1,17 +1,38 @@
 import React, { useState } from 'react';
 import { register } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+
 
 export default function Register() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (form.password !== form.confirmPassword) {
+      alert('Passwords do not match!');
+      return;
+    }
+
     try {
-      const res = await register({ name, email, password });
+      const res = await register({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+      });
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data));
       alert('Registration successful!');
@@ -28,29 +49,70 @@ export default function Register() {
         <label className="form-label">Name:</label>
         <input
           type="text"
+          name="name"
           required
-          value={name}
-          onChange={e => setName(e.target.value)}
+          value={form.name}
+          onChange={handleChange}
           className="form-input"
         />
 
         <label className="form-label">Email:</label>
         <input
           type="email"
+          name="email"
           required
-          value={email}
-          onChange={e => setEmail(e.target.value)}
+          value={form.email}
+          onChange={handleChange}
           className="form-input"
         />
 
         <label className="form-label">Password:</label>
-        <input
-          type="password"
-          required
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          className="form-input"
-        />
+        <div style={{ position: 'relative' }}>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            name="password"
+            required
+            value={form.password}
+            onChange={handleChange}
+            className="form-input"
+          />
+          <span
+            onClick={() => setShowPassword(!showPassword)}
+            style={{
+              position: 'absolute',
+              right: '0px',
+              top: '40%',
+              transform: 'translateY(-50%)',
+              cursor: 'pointer'
+            }}
+          >
+            {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+          </span>
+        </div>
+
+        <label className="form-label">Confirm Password:</label>
+        <div style={{ position: 'relative' }}>
+          <input
+            type={showConfirm ? 'text' : 'password'}
+            name="confirmPassword"
+            required
+            value={form.confirmPassword}
+            onChange={handleChange}
+            className="form-input"
+          />
+          <span
+            onClick={() => setShowConfirm(!showConfirm)}
+            style={{
+              position: 'absolute',
+              right: '0px',
+              top: '40%',
+              transform: 'translateY(-50%)',
+              cursor: 'pointer'
+            }}
+          >
+            {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+          </span>
+        </div>
 
         <button type="submit" className="form-button center-button">Register</button>
       </form>
