@@ -1,38 +1,97 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Navbar from '../components/Navbar';
+import PieChart from '../components/PieChart';
+import TransactionTable from '../components/TransactionTable';
+import AddTransactionModal from '../components/AddTransactionModal';
 
 export default function Dashboard() {
+  const [showModal, setShowModal] = useState(false);
+
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header">
-        <h2>Welcome Back, User</h2>
-        <button className="logout-button">Logout</button>
-      </header>
+    // Fullscreen background with 0.5 inch padding
+    <div
+      style={{
+        height: '100vh',
+        width: '100vw',
+        background: 'linear-gradient(to bottom right, #dbefff, #b7dfff)',
+        overflow: 'hidden',
+        padding: '0.5in',
+        boxSizing: 'border-box',
+      }}
+    >
+      {/* Glass container with internal scroll */}
+      <div
+        style={{
+          height: '100%',
+          width: '100%',
+          borderRadius: '20px',
+          background: 'rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          backdropFilter: 'blur(20px)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden', // important to hide outer scroll
+        }}
+      >
+        {/* Scrollable inner content */}
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '2rem',
+            borderRadius: 'inherit',
+          }}
+        >
+          <Navbar />
 
-      <section className="summary-section">
-        <div className="summary-card income">
-          <h3>Income</h3>
-          <p>$2,400</p>
-        </div>
-        <div className="summary-card expense">
-          <h3>Expense</h3>
-          <p>$1,200</p>
-        </div>
-        <div className="summary-card total">
-          <h3>Total</h3>
-          <p>$1,300</p>
-        </div>
-      </section>
+          {/* Overview Cards */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '1rem',
+              marginTop: '2rem',
+            }}
+          >
+            <div className="overview-card">💰 Total Balance: ₹0</div>
+            <div className="overview-card">⬆️ Income: ₹0</div>
+            <div className="overview-card">⬇️ Expenses: ₹0</div>
+          </div>
 
-      <section className="transactions-section">
-        <h3>Recent Transactions</h3>
-        <ul className="transaction-list">
-          <li>🍕 Pizza - $20</li>
-          <li>💼 Salary - $2,500</li>
-          <li>🚌 Transport - $50</li>
-        </ul>
-      </section>
+          {/* Pie Chart */}
+          <div style={{ margin: '2rem 0' }}>
+            <h3>Expense Breakdown</h3>
+            <PieChart />
+          </div>
 
-      <button className="add-button">+ Add Transaction</button>
+          {/* Transactions Table */}
+          <div style={{ margin: '2rem 0' }}>
+            <h3>Transaction History</h3>
+            <TransactionTable />
+          </div>
+
+          {/* Add Transaction Button */}
+          <button
+            style={{
+              padding: '10px 20px',
+              background: '#0077ff',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              display: 'block',
+              margin: '2rem auto',
+            }}
+            onClick={() => setShowModal(true)}
+          >
+            + Add Transaction
+          </button>
+
+          {showModal && <AddTransactionModal onClose={() => setShowModal(false)} />}
+        </div>
+      </div>
     </div>
   );
 }

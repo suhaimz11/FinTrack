@@ -157,23 +157,26 @@ h2 {
   cursor: pointer;
 }
 
-.input-wrapper {
-  position: relative;
-  width: 100%;
-  margin-bottom: 1rem;
+.overview-card {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  min-width: 280px;
+  max-width: 100%;
+  text-align: center;
+}
+/* WebKit Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-.input-wrapper input {
-  width: 100%;
-  padding-right: 2.5rem; /* leave space for the eye icon */
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
 }
 
-.eye-icon {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 1.1rem;
-  user-select: none;
-}
+
+
