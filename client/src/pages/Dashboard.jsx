@@ -8,43 +8,45 @@ export default function Dashboard() {
   const [showModal, setShowModal] = useState(false);
 
   return (
-    // Fullscreen background with 0.5 inch padding
     <div
       style={{
         height: '100vh',
         width: '100vw',
-        background: 'linear-gradient(to bottom right, #dbefff, #b7dfff)',
-        overflow: 'hidden',
+        background: 'linear-gradient(to bottom right, #eaf6ff, #d1e9ff)',
         padding: '0.5in',
         boxSizing: 'border-box',
+        overflow: 'hidden',
       }}
     >
-      {/* Glass container with internal scroll */}
+      {/* Glass container */}
       <div
         style={{
           height: '100%',
           width: '100%',
           borderRadius: '20px',
-          background: 'rgba(255, 255, 255, 0.2)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
+          background: 'rgba(255, 255, 255, 0.25)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
           backdropFilter: 'blur(20px)',
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden', // important to hide outer scroll
+          overflow: 'hidden',
         }}
       >
-        {/* Scrollable inner content */}
+        {/* Static Navbar at top */}
+        <div style={{ flexShrink: 0 }}>
+          <Navbar />
+        </div>
+
+        {/* Scrollable content */}
         <div
           style={{
             flex: 1,
             overflowY: 'auto',
             padding: '2rem',
-            borderRadius: 'inherit',
+            boxSizing: 'border-box',
           }}
         >
-          <Navbar />
-
           {/* Overview Cards */}
           <div
             style={{
@@ -52,7 +54,6 @@ export default function Dashboard() {
               justifyContent: 'space-between',
               flexWrap: 'wrap',
               gap: '1rem',
-              marginTop: '2rem',
             }}
           >
             <div className="overview-card">💰 Total Balance: ₹0</div>
@@ -66,7 +67,7 @@ export default function Dashboard() {
             <PieChart />
           </div>
 
-          {/* Transactions Table */}
+          {/* Transaction Table */}
           <div style={{ margin: '2rem 0' }}>
             <h3>Transaction History</h3>
             <TransactionTable />

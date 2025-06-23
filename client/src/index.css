@@ -68,18 +68,25 @@ h2 {
 
 /* Submit button */
 .form-button {
-  padding: 0.6rem 2rem; /* increased vertical and horizontal padding */
-  background: rgba(255, 255, 255, 0.1);
-  color: #222;
-  font-weight: 600;
-  font-size: 1rem; /* slightly larger font */
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.3);
+  color: #000;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  font-weight: 500;
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+  outline: none;
 }
+
+.form-button:hover {
+  box-shadow: 0 0 15px rgba(0, 119, 255, 0.4);
+}
+
 
 .center-button {
   display: block;
@@ -157,17 +164,18 @@ h2 {
   cursor: pointer;
 }
 
+/* styles.css */
 .overview-card {
-  background: rgba(255, 255, 255, 0.3);
-  padding: 1rem 2rem;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 1rem 2rem;
   flex: 1;
-  min-width: 280px;
-  max-width: 100%;
+  min-width: 200px;
   text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
+
 /* WebKit Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
