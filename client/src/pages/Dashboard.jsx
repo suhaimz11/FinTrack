@@ -3,9 +3,25 @@ import Navbar from '../components/Navbar';
 import PieChart from '../components/PieChart';
 import TransactionTable from '../components/TransactionTable';
 import AddTransactionModal from '../components/AddTransactionModal';
+import LineChart from '../components/LineChart';
 
 export default function Dashboard() {
   const [showModal, setShowModal] = useState(false);
+  const balanceHistory = [
+  { date: 'Jan', balance: 1000 },
+  { date: 'Feb', balance: 1200 },
+  { date: 'Mar', balance: 900 },
+  { date: 'Apr', balance: 1400 },
+  { date: 'May', balance: 1100 },
+];
+
+const expenseHistory = [
+  { date: 'Jan', expense: 500 },
+  { date: 'Feb', expense: 600 },
+  { date: 'Mar', expense: 400 },
+  { date: 'Apr', expense: 750 },
+  { date: 'May', expense: 620 },
+];
 
   return (
     <div
@@ -47,19 +63,59 @@ export default function Dashboard() {
             boxSizing: 'border-box',
           }}
         >
-          {/* Overview Cards */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '1rem',
-            }}
-          >
-            <div className="overview-card">💰 Total Balance: ₹0</div>
-            <div className="overview-card">⬆️ Income: ₹0</div>
-            <div className="overview-card">⬇️ Expenses: ₹0</div>
-          </div>
+          {/* Balance and Expense This Month Section */}
+<div style={{
+  display: 'flex',
+  gap: '1rem',
+  marginTop: '2rem',
+  flexWrap: 'wrap',
+}}>
+  {/* Balance Card */}
+  <div style={{
+  flex: 1,
+  background: 'rgba(255, 255, 255, 0.2)',
+  borderRadius: '16px',
+  padding: '1.5rem',
+  backdropFilter: 'blur(10px)',
+  WebkitBackdropFilter: 'blur(10px)',
+  border: '1px solid rgba(255, 255, 255, 0.3)',
+  color: '#000',
+  fontWeight: '600',
+  fontSize: '1.2rem',
+  boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+}}>
+   <span style={{ fontSize: '1.5rem' }}>Balance:</span> ₹2400
+
+  <LineChart dataPoints={balanceHistory} />
+</div>
+
+
+  {/* Expense Card */}
+  <div style={{
+  flex: 1,
+  background: 'rgba(255, 255, 255, 0.2)',
+  borderRadius: '16px',
+  padding: '1.5rem',
+  backdropFilter: 'blur(10px)',
+  WebkitBackdropFilter: 'blur(10px)',
+  border: '1px solid rgba(255, 255, 255, 0.3)',
+  color: '#000',
+  fontWeight: '600',
+  fontSize: '1.2rem',
+  boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+}}>
+   <span style={{ fontSize: '1.5rem' }}>Expenses This Month:</span> ₹620
+
+  <LineChart
+    dataPoints={expenseHistory.map(item => ({
+      date: item.date,
+      balance: item.expense // reusing "balance" field name to work with LineChart
+    }))}
+  />
+</div>
+
+</div>
+
 
           {/* Pie Chart */}
           <div style={{ margin: '2rem 0' }}>
