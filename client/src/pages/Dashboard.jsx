@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import PieChart from '../components/PieChart';
 import TransactionTable from '../components/TransactionTable';
 import AddTransactionModal from '../components/AddTransactionModal';
 import LineChart from '../components/LineChart';
+import {
+  fetchTransactions,
+  addTransaction,
+  deleteTransaction,
+} from '../api/transactions.js';
 
 export default function Dashboard() {
   const [showModal, setShowModal] = useState(false);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const balanceHistory = [
     { date: 'Jan', balance: 1000 },
@@ -38,6 +45,40 @@ export default function Dashboard() {
     flex: 1,
   };
 
+  useEffect(() => {
+    loadTransactions();
+  }, []);
+
+  const loadTransactions = async () => {
+    try {
+      const data = await fetchTransactions();
+      setTransactions(data);
+    } catch (error) {
+      alert('Failed to load transactions');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddTransaction = async (formData) => {
+    try {
+      await addTransaction(formData);
+      setShowModal(false);
+      loadTransactions();
+    } catch (error) {
+      alert('Failed to add transaction');
+    }
+  };
+
+  const handleDeleteTransaction = async (id) => {
+    try {
+      await deleteTransaction(id);
+      loadTransactions();
+    } catch (error) {
+      alert('Failed to delete transaction');
+    }
+  };
+
   return (
     <div
       style={{
@@ -49,7 +90,6 @@ export default function Dashboard() {
         overflow: 'hidden',
       }}
     >
-      {/* Glass container */}
       <div
         style={{
           height: '100%',
@@ -64,12 +104,10 @@ export default function Dashboard() {
           overflow: 'hidden',
         }}
       >
-        {/* Navbar */}
         <div style={{ flexShrink: 0 }}>
           <Navbar />
         </div>
 
-        {/* Scrollable content */}
         <div
           style={{
             flex: 1,
@@ -78,7 +116,6 @@ export default function Dashboard() {
             boxSizing: 'border-box',
           }}
         >
-          {/* Balance and Expense section */}
           <div
             style={{
               display: 'flex',
@@ -87,17 +124,15 @@ export default function Dashboard() {
               flexWrap: 'wrap',
             }}
           >
-            {/* Balance */}
             <div style={glassCardStyle}>
               <span style={{ fontSize: '1.5rem' }}>Balance:</span> ₹2400
               <LineChart dataPoints={balanceHistory} />
             </div>
 
-            {/* Expense */}
             <div style={glassCardStyle}>
               <span style={{ fontSize: '1.5rem' }}>Expenses This Month:</span> ₹620
               <LineChart
-                dataPoints={expenseHistory.map(item => ({
+                dataPoints={expenseHistory.map((item) => ({
                   date: item.date,
                   balance: item.expense,
                 }))}
@@ -105,47 +140,48 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Combined Transaction and Pie Chart Container */}
-<div
-  style={{
-    ...glassCardStyle,
-    display: 'flex',
-    gap: '2rem',
-    padding: '1.5rem',
-    flexWrap: 'wrap',
-    margin: '2rem 0',
-  }}
->
-  {/* Transaction Table */}
-  <div style={{ flex: '2 1 600px', minWidth: '300px' }}>
-    <h3 style={{ marginBottom: '1rem' }}>Transaction History</h3>
-    <TransactionTable />
-  </div>
+          <div
+            style={{
+              ...glassCardStyle,
+              display: 'flex',
+              gap: '2rem',
+              padding: '1.5rem',
+              flexWrap: 'wrap',
+              margin: '2rem 0',
+            }}
+          >
+            <div style={{ flex: '2 1 600px', minWidth: '300px' }}>
+              <h3 style={{ marginBottom: '1rem' }}>Transaction History</h3>
+              <TransactionTable
+                transactions={transactions}
+                onDelete={handleDeleteTransaction}
+              />
+            </div>
 
-  {/* Pie Chart */}
-  <div style={{ flex: '1 1 300px', minWidth: '250px' }}>
-    <h3 style={{ marginBottom: '1rem' }}>Expense Breakdown</h3>
-    <PieChart />
-  </div>
-</div>
-
+            <div style={{ flex: '1 1 300px', minWidth: '250px' }}>
+              <h3 style={{ marginBottom: '1rem' }}>Expense Breakdown</h3>
+              <PieChart transactions={transactions} />
+            </div>
+          </div>
 
           <button className="floating-add-btn" onClick={() => setShowModal(true)}>
             <span className="plus-symbol">+</span>
             <span className="add-text">+ Add Transaction</span>
           </button>
 
-          {showModal && <AddTransactionModal onClose={() => setShowModal(false)} />}
-
-          
-
-
-
-
-
-
-
-          
+          {showModal && (
+            <AddTransactionModal
+            onClose={() => setShowModal(false)}
+            onSubmit={async (data) => {
+            try {
+              await addTransaction(data);
+              window.location.reload(); // quick fix to reload list
+            } catch (e) {
+                alert("Error adding transaction");
+          }
+    }}
+  />
+)}
         </div>
       </div>
     </div>

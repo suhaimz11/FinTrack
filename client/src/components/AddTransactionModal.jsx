@@ -1,25 +1,27 @@
 import React, { useState } from 'react';
 
 export default function AddTransactionModal({ onClose, onSubmit }) {
+  const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
-  const [type, setType] = useState('expense'); // or 'income'
+  const [type, setType] = useState('expense');
   const [date, setDate] = useState('');
-  const [description, setDescription] = useState('');
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!amount || !category || !date) {
+    if (!title || !amount || !category || !date) {
       alert('Please fill in all required fields');
       return;
     }
+
     const transactionData = {
+      title,
       amount: parseFloat(amount),
       category,
       type,
       date,
-      description,
     };
+
     if (onSubmit) onSubmit(transactionData);
     onClose();
   }
@@ -55,6 +57,18 @@ export default function AddTransactionModal({ onClose, onSubmit }) {
         }}
       >
         <h3 style={{ margin: 0, marginBottom: '1rem', textAlign: 'center' }}>Add Transaction</h3>
+
+        <label>
+          Title*:
+          <input
+            type="text"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            required
+            placeholder="e.g. Grocery, Rent, Salary"
+            style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
+          />
+        </label>
 
         <label>
           Amount*:
@@ -100,17 +114,6 @@ export default function AddTransactionModal({ onClose, onSubmit }) {
             value={date}
             onChange={e => setDate(e.target.value)}
             required
-            style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
-          />
-        </label>
-
-        <label>
-          Description:
-          <textarea
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-            rows={3}
-            placeholder="Optional"
             style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
           />
         </label>
