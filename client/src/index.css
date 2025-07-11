@@ -190,49 +190,53 @@ h2 {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  background: rgba(255, 255, 255, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  color: #000;
-  font-weight: 600;
-  font-size: 20px;
-  border-radius: 50px;
-  height: 50px;
-  width: 50px;
-  padding: 0 16px;
+  height: 55px;
+  width: 55px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(8, 178, 230, 0.3); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  /* Removed box-shadow for no glow */
+  color: #000000;
+  font-size: 24px;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
-  z-index: 999;
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
   white-space: nowrap;
 }
 
 .floating-add-btn .add-text {
+  display: none;
   margin-left: 8px;
-  opacity: 0;
-  font-size: 14px;
+  font-size: 16px;
+  white-space: nowrap;
   transition: opacity 0.3s ease;
-  pointer-events: none;
 }
 
 .floating-add-btn:hover {
   width: 170px;
+  border-radius: 30px;
+  padding: 0 16px;
   justify-content: flex-start;
-  padding-left: 18px;
+}
+
+.floating-add-btn:hover .plus-symbol {
+  display: none;
 }
 
 .floating-add-btn:hover .add-text {
+  display: inline;
   opacity: 1;
 }
 
-.floating-add-btn:hover .plus-sign {
-  display: none;
-}
+
+
 
 
 

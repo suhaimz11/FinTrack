@@ -105,34 +105,40 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Transaction Table and Pie Chart side-by-side */}
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '1.5rem',
-              margin: '2rem 0',
-            }}
-          >
-            {/* Transaction Table */}
-            <div style={glassCardStyle}>
-              <h3 style={{ marginBottom: '1rem' }}>Transaction History</h3>
-              <TransactionTable />
-            </div>
+          {/* Combined Transaction and Pie Chart Container */}
+<div
+  style={{
+    ...glassCardStyle,
+    display: 'flex',
+    gap: '2rem',
+    padding: '1.5rem',
+    flexWrap: 'wrap',
+    margin: '2rem 0',
+  }}
+>
+  {/* Transaction Table */}
+  <div style={{ flex: '2 1 600px', minWidth: '300px' }}>
+    <h3 style={{ marginBottom: '1rem' }}>Transaction History</h3>
+    <TransactionTable />
+  </div>
 
-            {/* Pie Chart */}
-            <div style={glassCardStyle}>
-              <h3 style={{ marginBottom: '1rem' }}>Expense Breakdown</h3>
-              <PieChart />
-            </div>
-          </div>
+  {/* Pie Chart */}
+  <div style={{ flex: '1 1 300px', minWidth: '250px' }}>
+    <h3 style={{ marginBottom: '1rem' }}>Expense Breakdown</h3>
+    <PieChart />
+  </div>
+</div>
+
 
           <button className="floating-add-btn" onClick={() => setShowModal(true)}>
-            <span className="plus-sign">+</span>
+            <span className="plus-symbol">+</span>
             <span className="add-text">+ Add Transaction</span>
           </button>
 
           {showModal && <AddTransactionModal onClose={() => setShowModal(false)} />}
+
+          
+
 
 
 

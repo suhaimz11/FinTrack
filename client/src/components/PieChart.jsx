@@ -5,7 +5,7 @@ import {
   Cell,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts';
 
 const COLORS = ['#0088FE', '#FFBB28', '#FF8042', '#00C49F', '#AA66CC', '#FF4444'];
@@ -36,6 +36,10 @@ export default function ExpensePieChart() {
   const [selectedMonth, setSelectedMonth] = useState('Jan');
   const data = dummyData[selectedMonth] || [];
 
+  const totalExpense = data.reduce((sum, item) => sum + item.value, 0);
+  const highestCategory = data.reduce((max, item) =>
+    item.value > max.value ? item : max, { name: '', value: 0 });
+
   return (
     <div>
       {/* Dropdown */}
@@ -50,11 +54,13 @@ export default function ExpensePieChart() {
             border: '1px solid #ccc',
             backgroundColor: '#fff',
             fontWeight: '500',
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
         >
           {months.map((month) => (
-            <option key={month} value={month}>{month}</option>
+            <option key={month} value={month}>
+              {month}
+            </option>
           ))}
         </select>
       </div>
@@ -80,6 +86,24 @@ export default function ExpensePieChart() {
             <Legend />
           </RePieChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Expense Summary */}
+      <div
+        style={{
+          marginTop: '1.5rem',
+          padding: '1rem',
+          borderRadius: '12px',
+          background: 'rgba(255, 255, 255, 0.25)',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          color: '#000',
+          fontWeight: '600',
+        }}
+      >
+        <div>Total Expense: ₹{totalExpense}</div>
+        <div>Highest Spent On: {highestCategory.name} (₹{highestCategory.value})</div>
       </div>
     </div>
   );
