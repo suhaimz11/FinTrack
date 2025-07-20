@@ -3,7 +3,7 @@ import Transaction from '../models/Transaction.js';
 // @desc Add new transaction
 // @route POST /api/transactions
 export const addTransaction = async (req, res) => {
-  const { title, amount, type, category } = req.body;
+  const { title, amount, type, category, date } = req.body;  // add date here
 
   console.log("Incoming request body:", req.body);
   console.log("Authenticated user:", req.user);
@@ -18,11 +18,12 @@ export const addTransaction = async (req, res) => {
 
   try {
     const transaction = new Transaction({
-      userId: req.user._id,  // use userId here
+      userId: req.user._id,
       title,
       amount,
       type,
-      category
+      category,
+      date: date ? new Date(date) : Date.now()  // add date field, fallback to current date
     });
 
     const saved = await transaction.save();
@@ -62,6 +63,38 @@ export const deleteTransaction = async (req, res) => {
     await transaction.deleteOne();
     res.json({ message: 'Transaction deleted' });
   } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// @desc Update a transaction
+// @route PUT /api/transactions/:id
+export const updateTransaction = async (req, res) => {
+  const { title, amount, type, category, date } = req.body;
+
+  try {
+    const transaction = await Transaction.findById(req.params.id);
+
+    if (!transaction) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+
+    // authorization check
+    if (transaction.userId.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    // Update only the provided fields
+    if (title !== undefined) transaction.title = title;
+    if (amount !== undefined) transaction.amount = amount;
+    if (type !== undefined) transaction.type = type;
+    if (category !== undefined) transaction.category = category;
+    if (date !== undefined) transaction.date = date;
+
+    const updatedTransaction = await transaction.save();
+    res.json(updatedTransaction);
+  } catch (error) {
+    console.error("Error updating transaction:", error);
     res.status(500).json({ message: 'Server error' });
   }
 };
