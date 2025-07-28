@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   PieChart as RePieChart,
   Pie,
@@ -10,62 +10,50 @@ import {
 
 const COLORS = ['#0088FE', '#FFBB28', '#FF8042', '#00C49F', '#AA66CC', '#FF4444'];
 
-const dummyData = {
-  Jan: [
-    { name: 'Food', value: 400 },
-    { name: 'Rent', value: 800 },
-    { name: 'Transport', value: 300 },
-  ],
-  Feb: [
-    { name: 'Food', value: 300 },
-    { name: 'Rent', value: 1000 },
-    { name: 'Transport', value: 250 },
-    { name: 'Shopping', value: 150 },
-  ],
-  Mar: [
-    { name: 'Food', value: 450 },
-    { name: 'Rent', value: 900 },
-    { name: 'Bills', value: 200 },
-    { name: 'Others', value: 100 },
-  ],
-};
+const monthNames = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
 
-const months = Object.keys(dummyData);
+export default function PieChart({ transactions, selectedMonth, selectedYear }) {
+  // Filter & aggregate expenses by category based on selected month & year
+  const data = useMemo(() => {
+    if (!transactions || transactions.length === 0) return [];
 
-export default function ExpensePieChart() {
-  const [selectedMonth, setSelectedMonth] = useState('Jan');
-  const data = dummyData[selectedMonth] || [];
+    const monthIndex = monthNames.indexOf(selectedMonth);
+    if (monthIndex === -1) return [];
 
+    // Filter only expenses for selected month & year
+    const filtered = transactions.filter(txn => {
+      const date = new Date(txn.date);
+      return (
+        txn.type === 'expense' &&
+        date.getFullYear() === selectedYear &&
+        date.getMonth() === monthIndex
+      );
+    });
+
+    // Aggregate amounts by category
+    const categoryMap = {};
+    filtered.forEach(txn => {
+      if (txn.category) {
+        categoryMap[txn.category] = (categoryMap[txn.category] || 0) + txn.amount;
+      }
+    });
+
+    // Transform into array for recharts
+    return Object.entries(categoryMap).map(([name, value]) => ({ name, value }));
+  }, [transactions, selectedMonth, selectedYear]);
+
+  // Calculate total & highest category
   const totalExpense = data.reduce((sum, item) => sum + item.value, 0);
-  const highestCategory = data.reduce((max, item) =>
-    item.value > max.value ? item : max, { name: '', value: 0 });
+  const highestCategory = data.reduce(
+    (max, item) => (item.value > max.value ? item : max),
+    { name: '', value: 0 }
+  );
 
   return (
     <div>
-      {/* Dropdown */}
-      <div style={{ marginBottom: '1rem', textAlign: 'right' }}>
-        <label style={{ marginRight: '0.5rem' }}>Select Month:</label>
-        <select
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-          style={{
-            padding: '5px 10px',
-            borderRadius: '6px',
-            border: '1px solid #ccc',
-            backgroundColor: '#fff',
-            fontWeight: '500',
-            cursor: 'pointer',
-          }}
-        >
-          {months.map((month) => (
-            <option key={month} value={month}>
-              {month}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Pie Chart */}
       <div style={{ width: '100%', height: 300 }}>
         <ResponsiveContainer>
           <RePieChart>
@@ -88,7 +76,6 @@ export default function ExpensePieChart() {
         </ResponsiveContainer>
       </div>
 
-      {/* Expense Summary */}
       <div
         style={{
           marginTop: '1.5rem',
@@ -102,8 +89,10 @@ export default function ExpensePieChart() {
           fontWeight: '600',
         }}
       >
-        <div>Total Expense: ₹{totalExpense}</div>
-        <div>Highest Spent On: {highestCategory.name} (₹{highestCategory.value})</div>
+        <div>Total Expense: ₹{totalExpense.toFixed(2)}</div>
+        <div>
+          Highest Spent On: {highestCategory.name || 'N/A'} (₹{highestCategory.value.toFixed(2)})
+        </div>
       </div>
     </div>
   );

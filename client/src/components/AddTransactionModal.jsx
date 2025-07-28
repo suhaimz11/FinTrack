@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export default function AddTransactionModal({ onClose, onSubmit }) {
-  const [title, setTitle] = useState('');
+  const [details, setDetails] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [type, setType] = useState('expense');
@@ -9,13 +9,13 @@ export default function AddTransactionModal({ onClose, onSubmit }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!title || !amount || !category || !date) {
+    if (!details || !amount || !category || !date) {
       alert('Please fill in all required fields');
       return;
     }
 
     const transactionData = {
-      title,
+      details,
       amount: parseFloat(amount),
       category,
       type,
@@ -25,6 +25,18 @@ export default function AddTransactionModal({ onClose, onSubmit }) {
     if (onSubmit) onSubmit(transactionData);
     onClose();
   }
+
+  const categories = [
+    'Food',
+    'Transport',
+    'Rent',
+    'Entertainment',
+    'Salary',
+    'Shopping',
+    'Utilities',
+    'Healthcare',
+    'Other',
+  ];
 
   return (
     <div
@@ -59,13 +71,13 @@ export default function AddTransactionModal({ onClose, onSubmit }) {
         <h3 style={{ margin: 0, marginBottom: '1rem', textAlign: 'center' }}>Add Transaction</h3>
 
         <label>
-          Title*:
+          Details*:
           <input
             type="text"
-            value={title}
-            onChange={e => setTitle(e.target.value)}
+            value={details}
+            onChange={e => setDetails(e.target.value)}
             required
-            placeholder="e.g. Grocery, Rent, Salary"
+            placeholder="e.g. Bought groceries from Walmart"
             style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
           />
         </label>
@@ -84,14 +96,17 @@ export default function AddTransactionModal({ onClose, onSubmit }) {
 
         <label>
           Category*:
-          <input
-            type="text"
+          <select
             value={category}
             onChange={e => setCategory(e.target.value)}
             required
-            placeholder="e.g. Food, Salary"
             style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
-          />
+          >
+            <option value="" disabled>Select category</option>
+            {categories.map((cat, idx) => (
+              <option key={idx} value={cat}>{cat}</option>
+            ))}
+          </select>
         </label>
 
         <label>

@@ -10,40 +10,21 @@ import {
   deleteTransaction,
 } from '../api/transactions.js';
 
+const monthNames = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+
 export default function Dashboard() {
   const [showModal, setShowModal] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const balanceHistory = [
-    { date: 'Jan', balance: 1000 },
-    { date: 'Feb', balance: 1200 },
-    { date: 'Mar', balance: 900 },
-    { date: 'Apr', balance: 1400 },
-    { date: 'May', balance: 1100 },
-  ];
-
-  const expenseHistory = [
-    { date: 'Jan', expense: 500 },
-    { date: 'Feb', expense: 600 },
-    { date: 'Mar', expense: 400 },
-    { date: 'Apr', expense: 750 },
-    { date: 'May', expense: 620 },
-  ];
-
-  const glassCardStyle = {
-    background: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: '16px',
-    padding: '1.5rem',
-    backdropFilter: 'blur(10px)',
-    WebkitBackdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255, 255, 255, 0.3)',
-    color: '#000',
-    fontWeight: '600',
-    fontSize: '1rem',
-    boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-    flex: 1,
-  };
+  // Centralize selectedMonth as "YYYY-MM"
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+  });
 
   useEffect(() => {
     loadTransactions();
@@ -77,6 +58,42 @@ export default function Dashboard() {
     } catch (error) {
       alert('Failed to delete transaction');
     }
+  };
+
+  // Convert selectedMonth YYYY-MM to parts for PieChart
+  const selectedYear = parseInt(selectedMonth.split('-')[0], 10);
+  const selectedMonthIndex = parseInt(selectedMonth.split('-')[1], 10) - 1;
+  const selectedMonthName = monthNames[selectedMonthIndex];
+
+  // Filter balanceHistory and expenseHistory for charts or keep dummy data
+  const balanceHistory = [
+    { date: 'Jan', balance: 1000 },
+    { date: 'Feb', balance: 1200 },
+    { date: 'Mar', balance: 900 },
+    { date: 'Apr', balance: 1400 },
+    { date: 'May', balance: 1100 },
+  ];
+
+  const expenseHistory = [
+    { date: 'Jan', expense: 500 },
+    { date: 'Feb', expense: 600 },
+    { date: 'Mar', expense: 400 },
+    { date: 'Apr', expense: 750 },
+    { date: 'May', expense: 620 },
+  ];
+
+  const glassCardStyle = {
+    background: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: '16px',
+    padding: '1.5rem',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    border: '1px solid rgba(255, 255, 255, 0.3)',
+    color: '#000',
+    fontWeight: '600',
+    fontSize: '1rem',
+    boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+    flex: 1,
   };
 
   return (
@@ -154,13 +171,19 @@ export default function Dashboard() {
               <h3 style={{ marginBottom: '1rem' }}>Transaction History</h3>
               <TransactionTable
                 transactions={transactions}
+                selectedMonth={selectedMonth}
+                setSelectedMonth={setSelectedMonth}
                 onDelete={handleDeleteTransaction}
               />
             </div>
 
             <div style={{ flex: '1 1 300px', minWidth: '250px' }}>
               <h3 style={{ marginBottom: '1rem' }}>Expense Breakdown</h3>
-              <PieChart transactions={transactions} />
+              <PieChart
+                transactions={transactions}
+                selectedMonth={selectedMonthName}
+                selectedYear={selectedYear}
+              />
             </div>
           </div>
 
@@ -171,17 +194,18 @@ export default function Dashboard() {
 
           {showModal && (
             <AddTransactionModal
-            onClose={() => setShowModal(false)}
-            onSubmit={async (data) => {
-            try {
-              await addTransaction(data);
-              window.location.reload(); // quick fix to reload list
-            } catch (e) {
-                alert("Error adding transaction");
-          }
-    }}
-  />
-)}
+              onClose={() => setShowModal(false)}
+              onSubmit={async (data) => {
+                try {
+                  await addTransaction(data);
+                  loadTransactions();
+                  setShowModal(false);
+                } catch (e) {
+                  alert("Error adding transaction");
+                }
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

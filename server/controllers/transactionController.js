@@ -3,14 +3,15 @@ import Transaction from '../models/Transaction.js';
 // @desc Add new transaction
 // @route POST /api/transactions
 export const addTransaction = async (req, res) => {
-  const { title, amount, type, category, date } = req.body;  // add date here
+  const { details, amount, type, category, date } = req.body;  // add date here
 
   console.log("Incoming request body:", req.body);
   console.log("Authenticated user:", req.user);
 
-  if (!title || !amount || !type) {
-    return res.status(400).json({ message: 'Missing fields' });
-  }
+  if (!details || !amount || !type) {
+  return res.status(400).json({ message: 'Missing fields' });
+}
+
 
   if (!req.user) {
     return res.status(401).json({ message: 'User not authenticated' });
@@ -19,7 +20,7 @@ export const addTransaction = async (req, res) => {
   try {
     const transaction = new Transaction({
       userId: req.user._id,
-      title,
+      details,
       amount,
       type,
       category,
@@ -70,7 +71,7 @@ export const deleteTransaction = async (req, res) => {
 // @desc Update a transaction
 // @route PUT /api/transactions/:id
 export const updateTransaction = async (req, res) => {
-  const { title, amount, type, category, date } = req.body;
+  const { details, amount, type, category, date } = req.body;
 
   try {
     const transaction = await Transaction.findById(req.params.id);
@@ -85,7 +86,7 @@ export const updateTransaction = async (req, res) => {
     }
 
     // Update only the provided fields
-    if (title !== undefined) transaction.title = title;
+    if (details !== undefined) transaction.details= details;
     if (amount !== undefined) transaction.amount = amount;
     if (type !== undefined) transaction.type = type;
     if (category !== undefined) transaction.category = category;

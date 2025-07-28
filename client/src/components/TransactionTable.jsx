@@ -1,59 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { fetchTransactions, deleteTransaction, updateTransaction } from '../api/transactions'; // add updateTransaction api
+import { fetchTransactions, deleteTransaction, updateTransaction } from '../api/transactions';
 
-export default function TransactionTable() {
-  const [transactions, setTransactions] = useState([]);
+export default function TransactionTable({ transactions, selectedMonth, setSelectedMonth, onDelete }) {
   const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [months, setMonths] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // no longer fetches inside
+
   const [editingId, setEditingId] = useState(null);
-  const [editFormData, setEditFormData] = useState({ title: '', amount: '', category: '', type: '', date: '' });
-
-  const getData = async () => {
-    try {
-      const data = await fetchTransactions();
-      data.reverse(); // latest first
-      setTransactions(data);
-
-      const uniqueMonths = Array.from(new Set(
-        data.map(txn => {
-          const d = new Date(txn.date);
-          return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
-        })
-      )).sort((a, b) => b.localeCompare(a));
-
-      setMonths(uniqueMonths);
-
-      if (uniqueMonths.length > 0) {
-        setSelectedMonth(uniqueMonths[0]);
-        setFilteredTransactions(
-          data.filter(txn => {
-            const d = new Date(txn.date);
-            const monthStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
-            return monthStr === uniqueMonths[0];
-          })
-        );
-      } else {
-        setFilteredTransactions(data);
-      }
-    } catch (err) {
-      console.error('Error loading transactions:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [editFormData, setEditFormData] = useState({ details: '', amount: '', category: '', type: '', date: '' });
 
   useEffect(() => {
-    getData();
-  }, []);
+    if (!transactions || transactions.length === 0) {
+      setFilteredTransactions([]);
+      setMonths([]);
+      return;
+    }
 
+    // Prepare unique months
+    const uniqueMonths = Array.from(new Set(
+      transactions.map(txn => {
+        const d = new Date(txn.date);
+        return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+      })
+    )).sort((a, b) => b.localeCompare(a));
+    setMonths(uniqueMonths);
+
+    // Filter transactions by selectedMonth
+    if (selectedMonth) {
+      setFilteredTransactions(
+        transactions.filter(txn => {
+          const d = new Date(txn.date);
+          const monthStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+          return monthStr === selectedMonth;
+        })
+      );
+    } else {
+      setFilteredTransactions(transactions);
+    }
+  }, [transactions, selectedMonth]);
+
+  // Delete transaction by id
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
       try {
         await deleteTransaction(id);
-        setTransactions(prev => prev.filter(tx => tx._id !== id));
-        setFilteredTransactions(prev => prev.filter(tx => tx._id !== id));
+        if (onDelete) onDelete(id);
       } catch (err) {
         console.error('Failed to delete:', err);
       }
@@ -64,7 +55,7 @@ export default function TransactionTable() {
   const startEdit = (txn) => {
     setEditingId(txn._id);
     setEditFormData({
-      title: txn.title || '',
+      details: txn.details || '',
       amount: txn.amount || '',
       category: txn.category || '',
       type: txn.type || 'expense',
@@ -72,47 +63,36 @@ export default function TransactionTable() {
     });
   };
 
-  // Cancel editing
+  // Cancel editing mode
   const cancelEdit = () => {
     setEditingId(null);
   };
 
-  // Handle input change for edit form
+  // Track changes in edit form fields
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Submit updated transaction
+  // Submit updated transaction data
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Call your update API (you need to implement this in api/transactions.js and backend)
       await updateTransaction(editingId, editFormData);
-
-      // Refresh transactions
-      await getData();
-      setEditingId(null);
+      cancelEdit();
+      // No internal fetch, Dashboard controls transactions state
     } catch (err) {
       console.error('Failed to update transaction:', err);
     }
   };
 
-  // Handle month dropdown change
+  // Dropdown change handler calls parent setter
   const handleMonthChange = (e) => {
-    const month = e.target.value;
-    setSelectedMonth(month);
-    setFilteredTransactions(
-      transactions.filter(txn => {
-        const d = new Date(txn.date);
-        const monthStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
-        return monthStr === month;
-      })
-    );
+    setSelectedMonth(e.target.value);
   };
 
   if (loading) return <p>Loading...</p>;
-  if (transactions.length === 0) return <p>No transactions found.</p>;
+  if (!transactions || transactions.length === 0) return <p>No transactions found.</p>;
 
   return (
     <div>
@@ -132,6 +112,7 @@ export default function TransactionTable() {
           <tr style={styles.theadTr}>
             <th style={styles.th}>Date</th>
             <th style={styles.th}>Category</th>
+            <th style={styles.th}>Details</th>
             <th style={styles.th}>Amount</th>
             <th style={styles.th}>Type</th>
             <th style={styles.th}>Actions</th>
@@ -140,7 +121,7 @@ export default function TransactionTable() {
         <tbody>
           {filteredTransactions.length === 0 ? (
             <tr>
-              <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
+              <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
                 No transactions found for this month.
               </td>
             </tr>
@@ -169,6 +150,15 @@ export default function TransactionTable() {
                     </td>
                     <td style={styles.td}>
                       <input
+                        type="text"
+                        name="details"
+                        value={editFormData.details}
+                        onChange={handleEditChange}
+                        required
+                      />
+                    </td>
+                    <td style={styles.td}>
+                      <input
                         type="number"
                         name="amount"
                         value={editFormData.amount}
@@ -191,6 +181,7 @@ export default function TransactionTable() {
                   <>
                     <td style={styles.td}>{new Date(txn.date).toLocaleDateString()}</td>
                     <td style={styles.td}>{txn.category}</td>
+                    <td style={styles.td}>{txn.details || '-'}</td>
                     <td
                       style={{
                         ...styles.td,

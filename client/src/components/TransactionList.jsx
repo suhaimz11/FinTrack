@@ -9,7 +9,7 @@ export default function TransactionList() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
-    title: '',
+    details: '',       // changed from title
     amount: '',
     type: 'expense',
     category: '',
@@ -39,7 +39,7 @@ export default function TransactionList() {
     e.preventDefault();
     try {
       await addTransaction(formData);
-      setFormData({ title: '', amount: '', type: 'expense', category: '' });
+      setFormData({ details: '', amount: '', type: 'expense', category: '' });
       loadTransactions();
     } catch (err) {
       alert(err.message);
@@ -65,9 +65,9 @@ export default function TransactionList() {
       <form onSubmit={handleSubmit} style={{ marginBottom: '1rem' }}>
         <input
           type="text"
-          name="title"
-          placeholder="Title"
-          value={formData.title}
+          name="details"              // changed here
+          placeholder="Details"
+          value={formData.details}    // and here
           onChange={handleChange}
           required
         />
@@ -96,7 +96,7 @@ export default function TransactionList() {
       <ul>
         {transactions.map((tx) => (
           <li key={tx._id}>
-            <strong>{tx.title}</strong> - ₹{tx.amount} ({tx.type}){' '}
+            <strong>{tx.details}</strong> - ₹{tx.amount} ({tx.type}){' '}
             <button onClick={() => handleDelete(tx._id)}>Delete</button>
           </li>
         ))}
