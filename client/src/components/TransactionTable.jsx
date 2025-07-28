@@ -41,15 +41,18 @@ export default function TransactionTable({ transactions, selectedMonth, setSelec
 
   // Delete transaction by id
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this transaction?')) {
-      try {
-        await deleteTransaction(id);
-        if (onDelete) onDelete(id);
-      } catch (err) {
-        console.error('Failed to delete:', err);
-      }
+  console.log("Deleting transaction with ID:", id);  // <-- Add this line
+  if (window.confirm('Are you sure you want to delete this transaction?')) {
+    try {
+      await deleteTransaction(id);
+      setTransactions(prev => prev.filter(tx => tx._id !== id));
+      setFilteredTransactions(prev => prev.filter(tx => tx._id !== id));
+    } catch (err) {
+      console.error('Failed to delete:', err);
     }
-  };
+  }
+};
+
 
   // Start editing a transaction
   const startEdit = (txn) => {
