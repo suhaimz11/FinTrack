@@ -10,14 +10,21 @@ import {
   Legend,
 } from 'chart.js';
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
+ChartJS.register(
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend
+);
 
 export default function LineChart({ dataPoints }) {
   const data = {
     labels: dataPoints.map((item) => item.date),
     datasets: [
       {
-        label: 'Balance Over Time',
+        label: 'Value Over Time',
         data: dataPoints.map((item) => item.balance),
         fill: true,
         backgroundColor: 'rgba(0, 119, 255, 0.1)',

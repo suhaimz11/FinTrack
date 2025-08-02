@@ -49,24 +49,30 @@ export const getTransactions = async (req, res) => {
 // @desc Delete a transaction
 // @route DELETE /api/transactions/:id
 export const deleteTransaction = async (req, res) => {
+  console.log("Delete request received for ID:", req.params.id);
+  console.log("Authenticated user ID:", req.user._id);
+
   try {
     const transaction = await Transaction.findById(req.params.id);
 
     if (!transaction) {
+      console.log("Transaction not found for ID:", req.params.id);
       return res.status(404).json({ message: 'Transaction not found' });
     }
 
-    // use userId here for authorization check
     if (transaction.userId.toString() !== req.user._id.toString()) {
+      console.log("User not authorized to delete this transaction");
       return res.status(401).json({ message: 'Not authorized' });
     }
 
     await transaction.deleteOne();
     res.json({ message: 'Transaction deleted' });
   } catch (error) {
+    console.error("Error deleting transaction:", error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 // @desc Update a transaction
 // @route PUT /api/transactions/:id

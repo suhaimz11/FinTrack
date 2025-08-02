@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function Navbar() {
   const [username, setUsername] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
@@ -10,14 +13,28 @@ export default function Navbar() {
     }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.clear();
+
+    toast.success('Logged out successfully!', {
+      position: 'top-right',
+      autoClose: 2000,
+    });
+
+    // Redirect after toast shows
+    setTimeout(() => {
+      navigate('/'); // Redirect to login route
+    }, 2000);
+  };
+
   return (
     <nav
       style={{
         padding: '1rem 2rem',
-        background: 'rgba(91, 192, 235, 0.45)',         // translucent background
-        backdropFilter: 'blur(12px)',                    // glass blur effect
-        WebkitBackdropFilter: 'blur(12px)',              // Safari support
-        color: '#000',                                   // dark text for light background
+        background: 'rgba(91, 192, 235, 0.45)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        color: '#000',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
@@ -26,7 +43,6 @@ export default function Navbar() {
         boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
       }}
     >
-      {/* Left side: Logo + Greeting */}
       <div>
         <h2 style={{ margin: 0 }}>FinTrack</h2>
         {username && (
@@ -34,12 +50,11 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* Right side: Logout Button */}
       <button
         style={{
           padding: '8px 16px',
           borderRadius: '999px',
-          background: 'rgba(255, 255, 255, 0.3)', // brighter static state
+          background: 'rgba(255, 255, 255, 0.3)',
           color: '#000',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
@@ -47,21 +62,16 @@ export default function Navbar() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15)',
           cursor: 'pointer',
           fontWeight: '500',
-          transform: 'scale(1.05)', // permanently slightly enlarged
+          transform: 'scale(1.05)',
           transition: 'all 0.3s ease',
         }}
         onMouseEnter={(e) => {
-          e.target.style.boxShadow = '0 0 15px rgba(0, 119, 255, 0.4)'; // subtle glow
+          e.target.style.boxShadow = '0 0 15px rgba(0, 119, 255, 0.4)';
         }}
         onMouseLeave={(e) => {
-          e.target.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.15)'; // reset shadow
+          e.target.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.15)';
         }}
-        onClick={() => {
-          // Add logout logic here:
-          alert('Logging out...');
-          localStorage.clear();
-          window.location.href = '/login';
-        }}
+        onClick={handleLogout}
       >
         Logout
       </button>
