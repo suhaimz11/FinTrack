@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { register } from '../services/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';  
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -23,7 +24,7 @@ export default function Register() {
     e.preventDefault();
 
     if (form.password !== form.confirmPassword) {
-      alert('Passwords do not match!');
+      toast.error('Passwords do not match!', { autoClose: 2000 });
       return;
     }
 
@@ -35,10 +36,12 @@ export default function Register() {
       });
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data));
-      alert('Registration successful!');
-      navigate('/dashboard');
+      toast.success('Registration successful!', { autoClose: 2000 });
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
     } catch (err) {
-      alert(err.response?.data?.message || 'Registration failed');
+      toast.error(err.response?.data?.message || 'Registration failed', { autoClose: 3000 });
     }
   };
 
@@ -110,7 +113,7 @@ export default function Register() {
               cursor: 'pointer'
             }}
           >
-            {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+            {showConfirm ? <AiFillEyeInvisible /> : <AiFillEye />}
           </span>
         </div>
 
@@ -118,8 +121,10 @@ export default function Register() {
       </form>
 
       <p style={{ textAlign: 'center', marginTop: '1rem', color: '#222' }}>
-        Already have an account? <a href="/login">Login</a>
+        Already have an account? <Link to="/">Login</Link> 
       </p>
+
+      <ToastContainer />
     </div>
   );
 }

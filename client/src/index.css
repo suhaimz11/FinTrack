@@ -198,7 +198,6 @@ h2 {
   background: rgba(8, 178, 230, 0.3); 
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  /* Removed box-shadow for no glow */
   color: #000000;
   font-size: 24px;
   font-weight: bold;
@@ -234,6 +233,20 @@ h2 {
   display: inline;
   opacity: 1;
 }
+
+.Toastify__toast {
+  padding: 8px 14px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1) !important;
+  font-weight: 500 !important;
+}
+
+.Toastify__toast-body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+
 
 
 

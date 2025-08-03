@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import FinTrackLogo from '../components/FinTrackLogo';
 
 export default function Navbar() {
   const [username, setUsername] = useState('');
@@ -15,16 +15,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     localStorage.clear();
-
-    toast.success('Logged out successfully!', {
-      position: 'top-right',
-      autoClose: 2000,
-    });
-
-    // Redirect after toast shows
-    setTimeout(() => {
-      navigate('/'); // Redirect to login route
-    }, 2000);
+    navigate('/', { state: { loggedOut: true } }); // Send state to login
   };
 
   return (
@@ -43,11 +34,14 @@ export default function Navbar() {
         boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
       }}
     >
-      <div>
-        <h2 style={{ margin: 0 }}>FinTrack</h2>
-        {username && (
-          <p style={{ marginTop: '4px', fontSize: '14px' }}>Hi, {username} 👋</p>
-        )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <FinTrackLogo size={36} />
+        <div>
+          <h2 style={{ margin: 0 }}>FinTrack</h2>
+          {username && (
+            <p style={{ marginTop: '4px', fontSize: '14px' }}>Hi, {username} 👋</p>
+          )}
+        </div>
       </div>
 
       <button
